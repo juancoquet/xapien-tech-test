@@ -1,0 +1,160 @@
+SELECT 
+  ?item ?itemLabel ?birthName ?DOB
+  ?fatherKnownAs ?fatherDOB
+  ?motherKnownAs ?motherDOB
+  ?spouseKnownAs ?spouseDOB ?endTime
+  ?children
+  ?siblings
+  ?occupations
+  ?educationHistory
+  ?criminalConvictions
+
+WHERE
+{
+  BIND(wd:%(qcode)s as ?item)
+  ?item wdt:P31 wd:Q5. # is human
+  OPTIONAL { ?item wdt:P1477 ?birthName. }
+  OPTIONAL { ?item wdt:P569 ?DOB. }
+
+  # father -----------------------------------
+  OPTIONAL {
+    ?item wdt:P22 ?father.
+    ?father rdfs:label ?fatherKnownAs.
+    OPTIONAL { ?father wdt:P569 ?fatherDOB. }
+    FILTER (LANG(?fatherKnownAs) = "en")
+  }
+  # ---------------------------------- /father
+  
+  # mother -----------------------------------
+  OPTIONAL {
+    ?item wdt:P25 ?mother.
+    ?mother rdfs:label ?motherKnownAs.
+    OPTIONAL { ?mother wdt:P569 ?motherDOB. }
+    FILTER (LANG(?motherKnownAs) = "en")
+  }
+  # ---------------------------------- /mother
+  
+  # spouse -----------------------------------
+  OPTIONAL {
+    ?item wdt:P26 ?spouse.
+    ?spouse rdfs:label ?spouseKnownAs.
+    OPTIONAL { ?spouse wdt:P569 ?spouseDOB. }
+    ?item p:P26 ?spouseStatement.  # get the 'spouse' field
+    FILTER NOT EXISTS
+    { # exclude if the entry for the spouse field has an end date
+      ?spouseStatement pq:P582 ?hasEnded.
+    }
+    FILTER (LANG(?spouseKnownAs) = "en")
+  }
+  # ---------------------------------- /spouse
+  
+  # children ---------------------------------
+  {
+    SELECT
+      (CONCAT(
+        "[", GROUP_CONCAT(
+          CONCAT(
+            '{"childQ":"', STR(?childQ),
+            '", "childKnownAs":"', ?childKnownAs,
+            '", "childDOB":"', STR(?childDOB),'"}'
+          ); separator=","
+        ), "]") AS ?children)
+    WHERE
+    {
+      OPTIONAL {
+        BIND(wd:%(qcode)s as ?item)
+        ?item wdt:P40 ?childQ.
+        ?childQ rdfs:label ?childKnownAs.
+        OPTIONAL { ?childQ wdt:P569 ?chdDOB. }
+        BIND(IF(BOUND(?chdDOB), ?chdDOB, "") AS ?childDOB)
+        FILTER (LANG(?childKnownAs) = "en")
+      }
+    }
+    GROUP BY
+      ?item ?itemLabel
+  }
+  # --------------------------------- /children
+  
+  # siblings ----------------------------------
+  {
+    SELECT
+      (CONCAT(
+        "[", GROUP_CONCAT(
+          CONCAT(
+            '{"siblingQ":"', STR(?siblingQ),
+            '", "siblingKnownAs":"', ?siblingKnownAs,
+            '", "siblingDOB":"', STR(?siblingDOB),'"}'
+          ); separator=","
+        ), "]") AS ?siblings)
+    WHERE
+    {
+      OPTIONAL {
+        BIND(wd:%(qcode)s as ?item)
+        ?item wdt:P3373 ?siblingQ.
+        ?siblingQ rdfs:label ?siblingKnownAs.
+        OPTIONAL { ?siblingQ wdt:P569 ?sibDOB. }
+        BIND(IF(BOUND(?sibDOB), ?sibDOB, "") AS ?siblingDOB)
+        FILTER (LANG(?siblingKnownAs) = "en")
+      }
+    }
+    GROUP BY
+      ?item ?itemLabel
+  }
+  # ---------------------------------- /siblings
+  
+  # occupations --------------------------------
+  {
+    SELECT
+      (GROUP_CONCAT(?occupation; separator=", ") AS ?occupations)
+    WHERE
+    {
+      OPTIONAL
+      {
+        BIND(wd:%(qcode)s as ?item)
+        ?item wdt:P106 ?occupationQ.
+        ?occupationQ rdfs:label ?occupation.
+        FILTER (LANG(?occupation) = "en")
+      }
+    }
+    GROUP BY ?item ?itemLabel
+  }
+  # ---------------------------------- /occupations
+  
+  # occupations --------------------------------
+  {
+    SELECT
+      (GROUP_CONCAT(?education; separator=", ") AS ?educationHistory)
+    WHERE
+    {
+      OPTIONAL
+      {
+        BIND(wd:%(qcode)s as ?item)
+        ?item wdt:P69 ?educationQ.
+        ?educationQ rdfs:label ?education.
+        FILTER (LANG(?education) = "en")
+      }
+    }
+    GROUP BY ?item ?itemLabel
+  }
+  # ---------------------------------- /occupations
+  
+  # convictions --------------------------------
+  {
+    SELECT
+      (GROUP_CONCAT(?convictions; separator=", ") AS ?criminalConvictions)
+    WHERE
+    {
+      OPTIONAL {
+        BIND(wd:%(qcode)s as ?item)
+        ?item wdt:P1399 ?convictionsQ.
+        ?convictionsQ rdfs:label ?convictions.
+        FILTER (LANG(?convictions) = "en")
+      }
+    }
+    GROUP BY ?item ?itemLabel
+  }
+  # ------------------------------- /convictions
+ 
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+  
+}

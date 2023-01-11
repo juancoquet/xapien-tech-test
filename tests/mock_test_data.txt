@@ -1,0 +1,29 @@
+{'DOB': {'datatype': 'http://www.w3.org/2001/XMLSchema#dateTime',
+         'type': 'literal',
+         'value': '1987-06-24T00:00:00Z'},
+ 'birthName': {'type': 'literal',
+               'value': 'Lionel Andrés Messi',
+               'xml:lang': 'es'},
+ 'children': {'type': 'literal',
+              'value': '[{"childQ":"http://www.wikidata.org/entity/Q108049158", '
+                       '"childKnownAs":"Thiago Messi", '
+                       '"childDOB":"2012-11-02T00:00:00Z"},{"childQ":"http://www.wikidata.org/entity/Q108049261", '
+                       '"childKnownAs":"Mateo Messi Roccuzzo", '
+                       '"childDOB":"2015-01-01T00:00:00Z"},{"childQ":"http://www.wikidata.org/entity/Q108049303", '
+                       '"childKnownAs":"Ciro Messi Roccuzzo", '
+                       '"childDOB":"2018-01-01T00:00:00Z"}]'},
+ 'criminalConvictions': {'type': 'literal', 'value': 'tax fraud'},
+ 'educationHistory': {'type': 'literal', 'value': ''},
+ 'fatherDOB': {'datatype': 'http://www.w3.org/2001/XMLSchema#dateTime',
+               'type': 'literal',
+               'value': '1958-01-01T00:00:00Z'},
+ 'fatherKnownAs': {'type': 'literal', 'value': 'Jorge Messi', 'xml:lang': 'en'},
+ 'item': {'type': 'uri', 'value': 'http://www.wikidata.org/entity/Q615'},
+ 'itemLabel': {'type': 'literal', 'value': 'Lionel Messi', 'xml:lang': 'en'},
+ 'occupations': {'type': 'literal', 'value': 'association football player'},
+ 'spouseDOB': {'datatype': 'http://www.w3.org/2001/XMLSchema#dateTime',
+               'type': 'literal',
+               'value': '1988-02-26T00:00:00Z'},
+ 'spouseKnownAs': {'type': 'literal',
+                   'value': 'Antonela Roccuzzo',
+                   'xml:lang': 'en'}}
