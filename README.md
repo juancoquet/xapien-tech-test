@@ -19,7 +19,7 @@ The program takes a person's Wikidata Qcode as input and finds (where available)
 
 ## Usage
 The program uses the SPARQLWrapper library to query Wikidata. Pipenv is used to manage the virtual environment and dependencies. To run the program, first install the dependencies with `pipenv install`.
-The program can be run with `pipenv run python main.py <Qcode>`.
+The program can be run with `pipenv run python3 main.py <Qcode>`.
 
 #### Examples
 ```
