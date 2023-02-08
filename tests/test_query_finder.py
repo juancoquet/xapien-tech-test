@@ -11,7 +11,7 @@ class TestQcodeFinder(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.qf = QcodeFinder("Q615") # Lionel Messi
-        cls.alt_qf = QcodeFinder("Q317521") # Elon Musk
+        cls.alt_qf = QcodeFinder("Q317521") # Elon Musk # marie
 
     def test_valid_qcode(self):
         with self.assertRaises(ValueError):

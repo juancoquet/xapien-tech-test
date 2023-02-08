@@ -8,7 +8,7 @@ import sys
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 
-class BaseFinder():
+class BaseFinder:
     """
     Base class for query finders. Not intended to be used directly.
     """
@@ -33,7 +33,6 @@ class BaseFinder():
         self.education = None
         self.criminal_convictions = None
 
-
     def _read_query(self):
         """Read query from file and return as string.
         Query file is expected to be in queries/ directory.
@@ -47,7 +46,7 @@ class BaseFinder():
         with open(query_path, "r") as f:
             query = f.read()
         return query
-    
+
     def _get_response(self):
         """Get response from Wikidata SPARQL endpoint."""
         endpoint_url = "https://query.wikidata.org/sparql"
@@ -55,7 +54,7 @@ class BaseFinder():
             sys.version_info[0],
             sys.version_info[1],
         )
-        sparql  = SPARQLWrapper(endpoint_url, agent=user_agent)
+        sparql = SPARQLWrapper(endpoint_url, agent=user_agent)
         sparql.setQuery(self.query)
         sparql.setReturnFormat(JSON)
         return sparql.query().convert()["results"]["bindings"][0]
@@ -70,10 +69,15 @@ class BaseFinder():
             int: age
         """
         today = dt.date.today()
-        return today.year - dob.year - (
-            (today.month, today.day) < (dob.month, dob.day)
-            # evals to True (1) if today is before dob's birthday
-            # else False (0)
+        return (
+            today.year
+            - dob.year
+            - (
+                (today.month, today.day)
+                < (dob.month, dob.day)
+                # evals to True (1) if today is before dob's birthday
+                # else False (0)
+            )
         )
 
     def _parse_url(self):
@@ -150,7 +154,9 @@ class BaseFinder():
     def _parse_criminal_convictions(self):
         if self.response.get("criminalConvictions"):
             if self.response["criminalConvictions"]["value"]:
-                self.criminal_convictions = self.response["criminalConvictions"]["value"]
+                self.criminal_convictions = self.response["criminalConvictions"][
+                    "value"
+                ]
 
 
 class QcodeFinder(BaseFinder):
@@ -167,8 +173,7 @@ class QcodeFinder(BaseFinder):
         self._parse_response()
 
     def __str__(self):
-        string = "-" * 80 + \
-            f"\nDATA FOUND FOR Q-CODE {self.qcode}:\n" + "-" * 80 + "\n"
+        string = "-" * 80 + f"\nDATA FOUND FOR Q-CODE {self.qcode}:\n" + "-" * 80 + "\n"
         if self.url:
             string += f"URL: {self.url}\n"
         if self.known_as:
